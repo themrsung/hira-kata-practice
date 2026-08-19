@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Keyboard from './Keyboard';
 import {
   CATEGORIES,
+  asScript,
   buildPool,
   kanaKeystrokes,
   pickQuestion,
@@ -10,6 +11,7 @@ import {
   type Direction,
   type InputMode,
   type Question,
+  type Script,
 } from './lib/kana';
 import { KANA_LAYOUT, legendFor, letterToCode, type Board, type KeyCode } from './lib/layouts';
 
@@ -19,6 +21,8 @@ interface Settings {
   direction: Direction;
   input: InputMode;
   keyboard: boolean;
+  /** script the on-screen keyboard legends are drawn in */
+  legend: Script;
   hint: boolean;
   cats: Category[];
 }
@@ -27,6 +31,7 @@ const DEFAULTS: Settings = {
   direction: 'h2k',
   input: 'ansi',
   keyboard: true,
+  legend: 'katakana',
   hint: false,
   cats: ['gojuon'],
 };
@@ -42,6 +47,7 @@ function readHash(): Settings {
     direction: dir === 'k2h' || dir === 'random' || dir === 'h2k' ? dir : DEFAULTS.direction,
     input: inp === 'jis' || inp === 'romaji' || inp === 'ansi' ? inp : DEFAULTS.input,
     keyboard: p.has('kb') ? p.get('kb') === '1' : DEFAULTS.keyboard,
+    legend: p.get('kl') === 'h' ? 'hiragana' : DEFAULTS.legend,
     hint: p.has('h') ? p.get('h') === '1' : DEFAULTS.hint,
     cats: cats.length ? (cats as Category[]) : DEFAULTS.cats,
   };
@@ -52,6 +58,7 @@ function writeHash(s: Settings) {
     d: s.direction,
     i: s.input,
     kb: s.keyboard ? '1' : '0',
+    kl: s.legend === 'hiragana' ? 'h' : 'k',
     h: s.hint ? '1' : '0',
     c: s.cats.join('.'),
   });
@@ -59,16 +66,6 @@ function writeHash(s: Settings) {
 }
 
 /* ---------------- helpers ---------------- */
-
-const H_START = 0x3041;
-const H_END = 0x3096;
-/** hiragana -> katakana for a single char; anything else passes through */
-const toKata = (ch: string) => {
-  const cp = ch.codePointAt(0)!;
-  return cp >= H_START && cp <= H_END ? String.fromCodePoint(cp + 0x60) : ch;
-};
-const asScript = (ch: string, script: 'hiragana' | 'katakana') =>
-  script === 'katakana' ? toKata(ch) : ch;
 
 const DIR_LABEL: Record<Direction, string> = {
   h2k: 'hiragana → katakana',
@@ -330,6 +327,23 @@ export default function App() {
             </div>
           </div>
 
+          {set.keyboard && !isRomaji && (
+            <div className="group">
+              <label>Key legends</label>
+              <div className="seg">
+                {(['katakana', 'hiragana'] as Script[]).map((sc) => (
+                  <button
+                    key={sc}
+                    aria-pressed={set.legend === sc}
+                    onClick={() => setSet((s) => ({ ...s, legend: sc }))}
+                  >
+                    {sc === 'katakana' ? 'カナ' : 'かな'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="group">
             <label>Character sets</label>
             <div className="chips">
@@ -389,7 +403,7 @@ export default function App() {
                     {hint.shift && <span className="kbd">⇧ Shift</span>}
                     <span className={`kbd${isRomaji ? '' : ' mark'}`}>{hintLegend}</span>
                     {!isRomaji && keystrokes?.[step] && (
-                      <span className="kbd mark">{keystrokes[step].glyph}</span>
+                      <span className="kbd mark">{asScript(keystrokes[step].glyph, set.legend)}</span>
                     )}
                   </>
                 )}
@@ -398,7 +412,7 @@ export default function App() {
 
               {usesFallback && (
                 <div className="note">
-                  ⚠ ろ sits on the JIS-only <code>IntlRo</code> key, which an ANSI board doesn't
+                  ⚠ {asScript('ろ', set.legend)} sits on the JIS-only <code>IntlRo</code> key, which an ANSI board doesn't
                   have — <span className="kbd">\</span> is accepted instead.
                 </div>
               )}
@@ -410,6 +424,7 @@ export default function App() {
           <Keyboard
             mode={isRomaji ? 'romaji' : 'kana'}
             board={board}
+            legend={set.legend}
             hintCode={hint.code}
             hintShift={hint.shift}
             pressed={pressed}

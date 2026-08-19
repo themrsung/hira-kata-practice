@@ -32,6 +32,30 @@ export const CORPUS: KanaEntry[] = corpusText
   });
 
 /* ------------------------------------------------------------------ *
+ * Script conversion
+ * ------------------------------------------------------------------ */
+
+export type Script = 'hiragana' | 'katakana';
+
+const H_START = 0x3041;
+const H_END = 0x3096;
+
+/**
+ * hiragana -> katakana for a single char, via the fixed +0x60 block offset.
+ * Anything outside U+3041..U+3096 passes through untouched, which is what
+ * keeps the combining marks (゛゜), the prolonged mark (ー) and punctuation
+ * on the keyboard legends unharmed.
+ */
+export const toKata = (ch: string) => {
+  const cp = ch.codePointAt(0)!;
+  return cp >= H_START && cp <= H_END ? String.fromCodePoint(cp + 0x60) : ch;
+};
+
+/** Render a hiragana source string in the requested script. */
+export const asScript = (s: string, script: Script) =>
+  script === 'katakana' ? [...s].map(toKata).join('') : s;
+
+/* ------------------------------------------------------------------ *
  * Kana keystrokes
  * ------------------------------------------------------------------ */
 

@@ -7,10 +7,13 @@ import {
   type Board,
   type KeyCode,
 } from './lib/layouts';
+import { asScript, type Script } from './lib/kana';
 
 interface Props {
   mode: 'kana' | 'romaji';
   board: Board;
+  /** script the kana legends are drawn in (the physical key is the same either way) */
+  legend: Script;
   /** key the hint wants next (null = no hint) */
   hintCode: KeyCode | null;
   /** whether that hint keystroke also needs Shift */
@@ -22,7 +25,7 @@ interface Props {
 }
 
 export default function Keyboard({
-  mode, board, hintCode, hintShift, pressed, stickyShift, onKey, onShift,
+  mode, board, legend, hintCode, hintShift, pressed, stickyShift, onKey, onShift,
 }: Props) {
   const rows = mode === 'romaji' ? ROMAJI_ROWS : ROWS;
 
@@ -52,8 +55,10 @@ export default function Keyboard({
         ) : (
           <>
             <span className="lat">{stickyShift ? latShift || lat : lat}</span>
-            {kana?.shift && <span className="kana-sm">{kana.shift}</span>}
-            <span className="kana">{(stickyShift && kana?.shift) || kana?.base || ''}</span>
+            {kana?.shift && <span className="kana-sm">{asScript(kana.shift, legend)}</span>}
+            <span className="kana">
+              {asScript((stickyShift && kana?.shift) || kana?.base || '', legend)}
+            </span>
           </>
         )}
       </button>
