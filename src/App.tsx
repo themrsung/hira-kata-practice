@@ -24,6 +24,8 @@ interface Settings {
   /** script the on-screen keyboard legends are drawn in */
   legend: Script;
   hint: boolean;
+  /** print the rōmaji reading under the prompt */
+  reading: boolean;
   cats: Category[];
 }
 
@@ -33,6 +35,7 @@ const DEFAULTS: Settings = {
   keyboard: true,
   legend: 'katakana',
   hint: false,
+  reading: false,
   cats: ['gojuon'],
 };
 
@@ -49,6 +52,7 @@ function readHash(): Settings {
     keyboard: p.has('kb') ? p.get('kb') === '1' : DEFAULTS.keyboard,
     legend: p.get('kl') === 'h' ? 'hiragana' : DEFAULTS.legend,
     hint: p.has('h') ? p.get('h') === '1' : DEFAULTS.hint,
+    reading: p.has('r') ? p.get('r') === '1' : DEFAULTS.reading,
     cats: cats.length ? (cats as Category[]) : DEFAULTS.cats,
   };
 }
@@ -60,6 +64,7 @@ function writeHash(s: Settings) {
     kb: s.keyboard ? '1' : '0',
     kl: s.legend === 'hiragana' ? 'h' : 'k',
     h: s.hint ? '1' : '0',
+    r: s.reading ? '1' : '0',
     c: s.cats.join('.'),
   });
   history.replaceState(null, '', `#${p}`);
@@ -324,6 +329,15 @@ export default function App() {
               >
                 Hint
               </button>
+              {!isRomaji && (
+                <button
+                  aria-pressed={set.reading}
+                  onClick={() => setSet((s) => ({ ...s, reading: !s.reading }))}
+                  title="Print the rōmaji reading under the prompt"
+                >
+                  Rōmaji
+                </button>
+              )}
             </div>
           </div>
 
@@ -377,7 +391,12 @@ export default function App() {
                 )}
               </div>
 
-              <div className="prompt">{q.prompt}</div>
+              <div className="promptwrap">
+                <div className="prompt">{q.prompt}</div>
+                {/* the reading is the same for either script — but in romaji mode it *is*
+                    the answer, so it is suppressed there (the toggle is hidden too). */}
+                {set.reading && !isRomaji && <div className="romaji">{q.entry.romaji[0]}</div>}
+              </div>
 
               <div className="answerbox">
                 {solved ? (

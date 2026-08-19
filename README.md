@@ -39,6 +39,10 @@ NFD, so じょ is correctly `し` + `゛` + `ょ` — three keystrokes.
 - **Keyboard** — on-screen board showing kana legends and Latin legends per layout.
 - **Hint** — highlights the next required key, one keystroke at a time (one letter at a time in
   romaji mode).
+- **Rōmaji** — prints the reading under the prompt. Hidden in romaji input mode, where the reading
+  *is* the answer.
+- **Key legends** — the board is labelled in katakana by default; switch to hiragana if you prefer.
+  Kana mode only, since romaji mode shows Latin legends anyway.
 
 ## Stateless
 
@@ -46,11 +50,12 @@ Nothing is stored — no account, no localStorage, no cookies. Your settings liv
 a configured drill is just a link:
 
 ```
-/#d=h2k&i=jis&kb=1&h=1&c=gojuon.dakuten.yoon
+/#d=h2k&i=jis&kb=1&kl=k&h=1&r=1&c=gojuon.dakuten.yoon
 ```
 
 `d` direction (`h2k` | `k2h` | `random`) · `i` input (`ansi` | `jis` | `romaji`) · `kb` keyboard ·
-`h` hint · `c` dot-separated character sets.
+`kl` key legends (`k` katakana | `h` hiragana) · `h` hint · `r` rōmaji reading ·
+`c` dot-separated character sets.
 
 ## Corpus
 
