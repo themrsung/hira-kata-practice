@@ -107,13 +107,29 @@ export const legendFor = (board: Board, code: KeyCode): [string, string] => {
   return [code, code];
 };
 
-/** Physical rows, in render order. `null` marks the JIS-only extra key slot. */
-export const ROWS: KeyCode[][] = [
+/**
+ * Physical rows, in render order.
+ *
+ * The two boards differ in where `Backslash` physically sits: on JIS it is at the
+ * end of the home row (right of `'`), on ANSI it is at the end of the QWERTY row
+ * (right of `]`, above Enter). The JIS-only keys `IntlYen` / `IntlRo` are still
+ * rendered on ANSI, greyed out, so the missing positions are visible.
+ */
+const JIS_ROWS: KeyCode[][] = [
   ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'IntlYen'],
   ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight'],
   ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Backslash'],
   ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'IntlRo'],
 ];
+
+const ANSI_ROWS: KeyCode[][] = [
+  ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'IntlYen'],
+  ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash'],
+  ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote'],
+  ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'IntlRo'],
+];
+
+export const rowsFor = (board: Board): KeyCode[][] => (board === 'jis' ? JIS_ROWS : ANSI_ROWS);
 
 /** QWERTY rows for romaji mode. */
 export const ROMAJI_ROWS: KeyCode[][] = [

@@ -26,6 +26,10 @@ A JIS board has two keys ANSI physically lacks: `IntlYen` (ー) and `IntlRo` (�
 those two keys are rendered greyed out and **Backslash is accepted as the stand-in for ろ**. That is
 unambiguous here, because the drill always knows which single kana it is asking for.
 
+The two boards also differ in where `Backslash` physically sits: on JIS it is at the end of the home
+row (right of `'`), on ANSI it is at the end of the QWERTY row (right of `]`, above Enter). Each
+board renders its own row order.
+
 ## Character sets
 
 Gojūon (あ–ん), dakuten (が ざ だ ば), handakuten (ぱ ぴ ぷ), small kana (ぁ っ ゃ), and yōon

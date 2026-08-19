@@ -2,7 +2,7 @@ import {
   JIS_ONLY,
   KANA_LAYOUT,
   ROMAJI_ROWS,
-  ROWS,
+  rowsFor,
   legendFor,
   type Board,
   type KeyCode,
@@ -27,7 +27,7 @@ interface Props {
 export default function Keyboard({
   mode, board, legend, hintCode, hintShift, pressed, stickyShift, onKey, onShift,
 }: Props) {
-  const rows = mode === 'romaji' ? ROMAJI_ROWS : ROWS;
+  const rows = mode === 'romaji' ? ROMAJI_ROWS : rowsFor(board);
 
   const renderKey = (code: KeyCode) => {
     const absent = board === 'ansi' && JIS_ONLY.includes(code);
