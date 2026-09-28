@@ -45,8 +45,9 @@ NFD, so じょ is correctly `し` + `゛` + `ょ` — three keystrokes.
   romaji mode).
 - **Rōmaji** — prints the reading under the prompt. Hidden in romaji input mode, where the reading
   *is* the answer.
-- **Key legends** — the board is labelled in katakana by default; switch to hiragana if you prefer.
-  Kana mode only, since romaji mode shows Latin legends anyway.
+- **Key legends** — the ANSI board is labelled in katakana by default; switch to hiragana if you
+  prefer. The JIS board is always labelled in hiragana, as physical JIS keycaps are, so the toggle
+  is ANSI kana only; romaji mode shows Latin legends anyway.
 
 ## Stateless
 
@@ -58,7 +59,7 @@ a configured drill is just a link:
 ```
 
 `d` direction (`h2k` | `k2h` | `random`) · `i` input (`ansi` | `jis` | `romaji`) · `kb` keyboard ·
-`kl` key legends (`k` katakana | `h` hiragana) · `h` hint · `r` rōmaji reading ·
+`kl` ANSI key legends (`k` katakana | `h` hiragana) · `h` hint · `r` rōmaji reading ·
 `c` dot-separated character sets.
 
 ## Corpus

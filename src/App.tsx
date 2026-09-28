@@ -21,7 +21,7 @@ interface Settings {
   direction: Direction;
   input: InputMode;
   keyboard: boolean;
-  /** script the on-screen keyboard legends are drawn in */
+  /** script the ANSI board's kana legends are drawn in (the JIS board is always hiragana) */
   legend: Script;
   hint: boolean;
   /** print the rōmaji reading under the prompt */
@@ -86,6 +86,9 @@ export default function App() {
 
   const board: Board = set.input === 'jis' ? 'jis' : 'ansi';
   const isRomaji = set.input === 'romaji';
+  // Real JIS keycaps are printed in hiragana, so the JIS board always reads that way.
+  // The legend setting only relabels the ANSI board, which has no printed kana.
+  const legend: Script = board === 'jis' ? 'hiragana' : set.legend;
 
   const pool = useMemo(
     () => buildPool(new Set(set.cats), set.input),
@@ -341,7 +344,7 @@ export default function App() {
             </div>
           </div>
 
-          {set.keyboard && !isRomaji && (
+          {set.keyboard && set.input === 'ansi' && (
             <div className="group">
               <label>Key legends</label>
               <div className="seg">
@@ -422,7 +425,7 @@ export default function App() {
                     {hint.shift && <span className="kbd">⇧ Shift</span>}
                     <span className={`kbd${isRomaji ? '' : ' mark'}`}>{hintLegend}</span>
                     {!isRomaji && keystrokes?.[step] && (
-                      <span className="kbd mark">{asScript(keystrokes[step].glyph, set.legend)}</span>
+                      <span className="kbd mark">{asScript(keystrokes[step].glyph, legend)}</span>
                     )}
                   </>
                 )}
@@ -431,7 +434,7 @@ export default function App() {
 
               {usesFallback && (
                 <div className="note">
-                  ⚠ {asScript('ろ', set.legend)} sits on the JIS-only <code>IntlRo</code> key, which an ANSI board doesn't
+                  ⚠ {asScript('ろ', legend)} sits on the JIS-only <code>IntlRo</code> key, which an ANSI board doesn't
                   have — <span className="kbd">\</span> is accepted instead.
                 </div>
               )}
@@ -443,7 +446,7 @@ export default function App() {
           <Keyboard
             mode={isRomaji ? 'romaji' : 'kana'}
             board={board}
-            legend={set.legend}
+            legend={legend}
             hintCode={hint.code}
             hintShift={hint.shift}
             pressed={pressed}
